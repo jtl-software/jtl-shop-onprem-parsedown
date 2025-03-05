@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,7 +15,7 @@ class CommonMarkTestStrict extends TestCase
 
     protected $parsedown;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->parsedown = new TestParsedown();
         $this->parsedown->setUrlsLinked(false);
@@ -45,26 +47,31 @@ class CommonMarkTestStrict extends TestCase
         $spec = str_replace("\r\n", "\n", $spec);
         $spec = strstr($spec, '<!-- END TESTS -->', true);
 
-        $matches = array();
-        preg_match_all('/^`{32} example\n((?s).*?)\n\.\n(?:|((?s).*?)\n)`{32}$|^#{1,6} *(.*?)$/m', $spec, $matches, PREG_SET_ORDER);
+        $matches = [];
+        preg_match_all(
+            '/^`{32} example\n((?s).*?)\n\.\n(?:|((?s).*?)\n)`{32}$|^#{1,6} *(.*?)$/m',
+            $spec,
+            $matches,
+            PREG_SET_ORDER
+        );
 
-        $data = array();
-        $currentId = 0;
+        $data           = [];
+        $currentId      = 0;
         $currentSection = '';
         foreach ($matches as $match) {
             if (isset($match[3])) {
                 $currentSection = $match[3];
             } else {
                 $currentId++;
-                $markdown = str_replace('→', "\t", $match[1]);
+                $markdown     = str_replace('→', "\t", $match[1]);
                 $expectedHtml = isset($match[2]) ? str_replace('→', "\t", $match[2]) : '';
 
-                $data[$currentId] = array(
-                    'id' => $currentId,
-                    'section' => $currentSection,
-                    'markdown' => $markdown,
+                $data[$currentId] = [
+                    'id'           => $currentId,
+                    'section'      => $currentSection,
+                    'markdown'     => $markdown,
                     'expectedHtml' => $expectedHtml
-                );
+                ];
             }
         }
 

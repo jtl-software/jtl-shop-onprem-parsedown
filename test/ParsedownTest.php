@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 require 'SampleExtensions.php';
 
 use PHPUnit\Framework\TestCase;
@@ -7,7 +10,7 @@ class ParsedownTest extends TestCase
 {
     final function __construct($name = null, array $data = array(), $dataName = '')
     {
-        $this->dirs = $this->initDirs();
+        $this->dirs      = $this->initDirs();
         $this->Parsedown = $this->initParsedown();
 
         parent::__construct($name, $data, $dataName);
@@ -21,7 +24,7 @@ class ParsedownTest extends TestCase
      */
     protected function initDirs()
     {
-        $dirs []= dirname(__FILE__).'/data/';
+        $dirs [] = dirname(__FILE__) . '/data/';
 
         return $dirs;
     }
@@ -31,9 +34,7 @@ class ParsedownTest extends TestCase
      */
     protected function initParsedown()
     {
-        $Parsedown = new TestParsedown();
-
-        return $Parsedown;
+        return new TestParsedown();
     }
 
     /**
@@ -60,12 +61,12 @@ class ParsedownTest extends TestCase
 
     function testRawHtml()
     {
-        $markdown = "```php\nfoobar\n```";
-        $expectedMarkup = '<pre><code class="language-php"><p>foobar</p></code></pre>';
+        $markdown           = "```php\nfoobar\n```";
+        $expectedMarkup     = '<pre><code class="language-php"><p>foobar</p></code></pre>';
         $expectedSafeMarkup = '<pre><code class="language-php">&lt;p&gt;foobar&lt;/p&gt;</code></pre>';
 
         $unsafeExtension = new UnsafeExtension;
-        $actualMarkup = $unsafeExtension->text($markdown);
+        $actualMarkup    = $unsafeExtension->text($markdown);
 
         $this->assertEquals($expectedMarkup, $actualMarkup);
 
@@ -77,12 +78,12 @@ class ParsedownTest extends TestCase
 
     function testTrustDelegatedRawHtml()
     {
-        $markdown = "```php\nfoobar\n```";
-        $expectedMarkup = '<pre><code class="language-php"><p>foobar</p></code></pre>';
+        $markdown           = "```php\nfoobar\n```";
+        $expectedMarkup     = '<pre><code class="language-php"><p>foobar</p></code></pre>';
         $expectedSafeMarkup = $expectedMarkup;
 
         $unsafeExtension = new TrustDelegatedExtension;
-        $actualMarkup = $unsafeExtension->text($markdown);
+        $actualMarkup    = $unsafeExtension->text($markdown);
 
         $this->assertEquals($expectedMarkup, $actualMarkup);
 
@@ -94,18 +95,13 @@ class ParsedownTest extends TestCase
 
     function data()
     {
-        $data = array();
+        $data = [];
 
-        foreach ($this->dirs as $dir)
-        {
+        foreach ($this->dirs as $dir) {
             $Folder = new DirectoryIterator($dir);
-
-            foreach ($Folder as $File)
-            {
-                /** @var $File DirectoryIterator */
-
-                if ( ! $File->isFile())
-                {
+            /** @var $File DirectoryIterator */
+            foreach ($Folder as $File) {
+                if (!$File->isFile()) {
                     continue;
                 }
 
@@ -113,16 +109,14 @@ class ParsedownTest extends TestCase
 
                 $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-                if ($extension !== 'md')
-                {
+                if ($extension !== 'md') {
                     continue;
                 }
 
                 $basename = $File->getBasename('.md');
 
-                if (file_exists($dir . $basename . '.html'))
-                {
-                    $data []= array($basename, $dir);
+                if (file_exists($dir . $basename . '.html')) {
+                    $data [] = array($basename, $dir);
                 }
             }
         }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 require_once(__DIR__ . '/CommonMarkTestStrict.php');
 
 /**
@@ -22,7 +25,7 @@ class CommonMarkTestWeak extends CommonMarkTestStrict
         parent::setUp();
 
         $textLevelElements = $this->parsedown->getTextLevelElements();
-        array_walk($textLevelElements, function (&$element) {
+        array_walk($textLevelElements, static function (&$element) {
             $element = preg_quote($element, '/');
         });
         $this->textLevelElementRegex = '\b(?:' . implode('|', $textLevelElements) . ')\b';
@@ -49,15 +52,15 @@ class CommonMarkTestWeak extends CommonMarkTestStrict
     {
         // invisible whitespaces at the beginning and end of block elements
         // however, whitespaces at the beginning of <pre> elements do matter
-        $markup = preg_replace(
-            array(
-                '/(<(?!(?:' . $this->textLevelElementRegex . '|\bpre\b))\w+\b[^>]*>(?:<' . $this->textLevelElementRegex . '[^>]*>)*)\s+/s',
-                '/\s+((?:<\/' . $this->textLevelElementRegex . '>)*<\/(?!' . $this->textLevelElementRegex . ')\w+\b>)/s'
-            ),
+        return preg_replace(
+            [
+                '/(<(?!(?:' . $this->textLevelElementRegex . '|\bpre\b))\w+\b[^>]*>(?:<'
+                . $this->textLevelElementRegex . '[^>]*>)*)\s+/s',
+                '/\s+((?:<\/' . $this->textLevelElementRegex . '>)*<\/(?!'
+                . $this->textLevelElementRegex . ')\w+\b>)/s'
+            ],
             '$1',
             $markup
         );
-
-        return $markup;
     }
 }
